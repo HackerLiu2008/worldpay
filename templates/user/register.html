@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>全球付-用户注册</title>
+    <link rel="stylesheet" href="/static/css/base.css"/>
+    <link rel="stylesheet" href="/static/css/register.css"/>
+    <link rel="icon" href="/static/img/master.png" type="image/x-icon"/>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.all.js"></script>
+</head>
+<body>
+    <div id="main">
+        <div class="container">
+            <img src="/static/img/bg_2.jpg" alt="" class="bgPic"/>
+            <div class="register">
+                <div class="title">
+                    <span>全球付注册</span>
+                    <a href="/user/login">去登录</a>
+                </div>
+                <form class="layui-form" action="" lay-filter="example">
+
+                    <div class="layui-form-item" style="display: none">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="text" id="ver_key" autocomplete="off" class="layui-input" value="{{ ver_key }}">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="display: none">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="text" id="middle_key" autocomplete="off" class="layui-input" value="{{ middle_key }}">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="text" id="u_name" lay-verify="required" autocomplete="off" class="layui-input" placeholder="用户名">
+                          </div>
+                            <div style="float: right;font-size: 5px;padding-top: 10px;color:#8A2BE2">最大8个字符</div>
+                        </div>
+                    </div>
+
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="text" id="u_acc"  autocomplete="off" class="layui-input" placeholder="账号(不能含中文字符)">
+                          </div>
+                            <div style="float: right;font-size: 3px;padding-top: 10px;color:#8A2BE2">空默认电话</div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="password" id="u_pass" lay-verify="required" autocomplete="off" class="layui-input" placeholder="密码(不能含中文字符)">
+                          </div>
+                            <div style="float: right;font-size: 3px;padding-top: 10px;color:#8A2BE2">限制6-12位</div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="tel" id="phone" lay-verify="required|phone" autocomplete="off" class="layui-input" placeholder="常用手机号码">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                          <div class="layui-input-inline">
+                            <input type="text" id="ver_code" autocomplete="off" class="layui-input" placeholder="验证码">
+                          </div>
+                            <div style="float: right;padding-top: 3px">
+                            <button type="submit" class="layui-btn demo-active layui-btn-sm layui-btn-radius"  lay-submit="" lay-filter="demo1" id="send_sms">验证码</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                          <button type="button" class="layui-btn layui-btn-normal layui-btn-radius"  id="demo2">立即提交</button>
+                        </div>
+                      </div>
+
+                </form>
+                <div class="other_login">
+                    <div class="log">
+                        <span>社交账号登录</span>
+                    </div>
+                    <div class="icon">
+                        <ul>
+                            <li data-log="icon" class="i_hover" title="敬请期待!">
+                                <img data-icon="wx" src="/static/img/wx.png" alt=""/>
+                                <span class="prompt" >微信登录</span>
+                            </li>
+                            <li data-log="icon" class="i_hover" title="敬请期待!">
+                                <img data-icon="qq" src="/static/img/qq.png" alt=""/>
+                                <span class="prompt" >QQ登录</span>
+                            </li>
+                            <li data-log="icon" class="i_hover" title="敬请期待!">
+                                <img data-icon="wb" src="/static/img/wb.png" alt=""/>
+                                <span class="prompt" >微博登录</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+        </div>
+    </div>
+<script>
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider', 'form'], function () {
+        var $ = layui.jquery,
+            form = layui.form;
+
+        var send_succ = function(){
+            var timer = null,
+                count = 120;
+            var DISABLED = 'layui-btn-disabled';
+                       // 增加样式
+            $('.demo-active').addClass(DISABLED);
+            // 增加属性
+            $('.demo-active').attr('disabled', true);
+
+            var t = $('#send_sms').html();
+            if (t=='验证码'){
+                timer = setInterval(function () {
+                    count--;
+                    $('#send_sms').html(count+'s');
+                    if (count<=0){
+                        clearInterval(timer);
+                        $('.demo-active').removeClass(DISABLED);
+                        // 增加属性
+                        $('.demo-active').attr('disabled', false);
+
+                        $('#send_sms').html('验证码');
+                    }
+                }, 1000)
+            }
+        };
+
+         form.on('submit(demo1)',function (data) {
+             send_succ();
+            var phone = $('#phone').val(),
+                ver_key = $('#ver_key').val();
+            data = {phone: phone, ver_key:ver_key};
+            $.ajax({
+				type : 'POST',
+				url : '/user/ver_code/',
+				data : {data:JSON.stringify(data)},
+				dataType : 'json',
+				success : function(data) {
+					// 校验参数成功,发送短信成功则,屏蔽按钮
+                    if (data.code == 0){
+
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+						icon : 5
+					});
+                    }
+				}
+			});
+          });
+
+        $('#demo2').on('click', function(data){
+            var u_name = $('#u_name').val(),
+                u_acc = $('#u_acc').val(),
+                u_pass = $('#u_pass').val(),
+                phone = $('#phone').val(),
+                ver_code = $('#ver_code').val(),
+                ver_key = $('#ver_key').val(),
+                middle_key = $('#middle_key').val();
+            data = {u_name: u_name, u_acc: u_acc, u_pass:u_pass, phone:phone,ver_code:ver_code, ver_key:ver_key};
+            $.ajax({
+				type : 'POST',
+				url : '/user/register/?middle_key='+middle_key,
+				data : {data:JSON.stringify(data)},
+				dataType : 'json',
+				success : function(data) {
+					// 校验参数成功,发送短信成功则,屏蔽按钮
+                    if (data.code == 0){
+                        layer.open({
+                            type: 2
+                            ,offset: 'auto' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                            ,skin:'layui-layer-demo'
+                            ,id: 'layerUser'//防止重复弹出
+                            ,title: '注册支付信息'
+                            ,area: ['30%','50%']
+                            ,anim: 2
+                            ,shadeClose:true
+                            ,content: '/user/register_pay/?u_name=' + u_name + "&u_acc=" + u_acc + '&u_pass=' +u_pass + '&phone=' + phone + '&middle_key=' + middle_key
+                            ,btn: '关闭全部'
+                            ,btnAlign: 'c' //按钮居中a
+                            ,shade:  [0.8, '#393D49'] //弹框背景选项
+                          });
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+						icon : 5
+					});
+                    }
+
+				}
+			});
+          })
+
+    })
+</script>
+
+</body>
+</html>

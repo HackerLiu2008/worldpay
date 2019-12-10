@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>订单确认界面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <style>
+        body {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <blockquote class="layui-elem-quote">上传支付截图: </blockquote>
+    <form class="layui-form">
+
+      <div class="layui-form-item">
+          <label class="layui-form-label">套餐选择: </label>
+          <div class="layui-input-block">
+            <select name="package" lay-filter="college">
+            <option value="">请选择套餐</option>
+              {% for i in package_list %}
+                <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">有&nbsp;&nbsp;效&nbsp;&nbsp;期: </label>
+          <h2 id="days"  style="line-height:35px; color: #104E8B"></h2>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收费金额 : </label>
+          <h2 id="money"  style="line-height:35px; color: #A52A2A"></h2>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">开卡单价 : </label>
+          <h2 id="price"  style="line-height:35px; color: #A52A2A"></h2>
+    </div>
+
+    </form>
+    <div class="layui-upload">
+      <div class="layui-upload-list">
+          <img src="{{ url }}" id="qr_code" width=200px height=200px style="padding:1px 1px 1px 130px;">
+        <p id="demoText"></p>
+      </div>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<button type="button" class="layui-btn layui-btn-danger" id="test1"><i class="layui-icon"></i>上传图片</button>
+    </div>
+
+
+    <div id="details" style="padding: 20px;" lay-filter="detail">
+    <form class="layui-form" lay-filter="example" id="myForm" enctype="multipart/form-data">
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">隐藏域</label>
+            <div class="layui-input-block">
+                <input type ="text" id="u_name" value="{{ u_name }}">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">隐藏域</label>
+            <div class="layui-input-block">
+                <input type ="text" id="u_acc" value="{{ u_acc }}">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">隐藏域</label>
+            <div class="layui-input-block">
+                <input type ="text"  id="u_pass" value="{{ u_pass }}">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">隐藏域</label>
+            <div class="layui-input-block">
+                <input type ="text"  id="phone" value="{{ phone }}">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">隐藏域</label>
+            <div class="layui-input-block">
+                <input type ="text"  id="middle_key" value="{{ middle_key }}">
+            </div>
+        </div>
+
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<button type="button" class="layui-btn site-demo-active" id="test9">确认完成</button>
+
+    </form>
+</div>
+<script src="/static/layui/layui.js"></script>
+<script src="/static/layui/layui.all.js"></script>
+<script src="/static/js/jquery-1.8.0.min.js"></script>
+<script>
+    layui.use(['form', 'laydate', 'upload'], function(){
+        var form = layui.form
+           , upload = layui.upload
+           , $ = layui.$;
+
+        form.on('select(college)', function (data) {
+           var message = $('select[name=package]').val();
+               $.ajax({
+                type : 'GET',
+                url : '/user/package/?key=' + message,
+                dataType : 'json',
+                success : function(data) {
+                    // 成功提示框
+                    if (data.code == 0){
+                        $('#money').html(data.money + ' 元');
+                        $('#days').html(data.days + ' 天');
+                        $('#price').html(data.price + ' 美刀');
+
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+                            offset:['100px'],
+						icon : 5
+					});
+                    }
+                },
+                complete:function () {
+                    // 增加样式
+                    $('.site-demo-active').removeClass(DISABLED);
+                    // 增加属性
+                    $('.site-demo-active').attr('disabled', false);
+                }
+            });
+
+        });
+
+
+        var u_name = $("#u_name").val(),
+            u_acc = $('#u_acc').val(),
+            u_pass = $('#u_pass').val(),
+            phone = $('#phone').val(),
+            middle_key = $('#middle_key').val();
+        var data_info = {u_name:u_name, u_acc:u_acc,u_pass:u_pass, phone:phone, middle_key:middle_key};
+
+        //储存客户上传的图片
+        var files;
+        upload.render({
+        elem: "#test1"
+        ,auto: false
+        ,accept: 'images'
+        ,acceptMime: 'image/*'
+        ,multiple: true
+        ,number:5
+        ,bindAction: ''
+        ,choose: function(obj){
+            parent.layer.msg('已选择图片!确认无误后确认完成!'
+            , {offset:['100px'],
+                icon : 6,
+                time:4000});
+            files = obj.pushFile();
+            }
+        });
+
+        //监听提交取出客户存储的文件,加入新的form集体发送请求
+        $('#test9').on('click', function () {
+
+            // 单击之后提交按钮不可选,防止重复提交
+            var DISABLED = 'layui-btn-disabled';
+            // 增加样式
+            $('.site-demo-active').addClass(DISABLED);
+            // 增加属性
+            $('.site-demo-active').attr('disabled', true);
+
+            var form = new FormData();
+            var num = 1;
+            for ( let i in files){
+                form.append("file_" + num.toString(), files[i]);
+                num += 1
+            }
+            var url = $("#qr_code")[0].src,
+
+                package_ = $('select[name=package]').val();
+
+            form.append('data', JSON.stringify(data_info));
+
+            form.append('url', '"'+url+'"');
+
+            form.append('package', '"'+package_+'"');
+
+            $.ajax({
+                type : 'POST',
+                url : '/user/register_pay/',
+                data : form,
+                contentType:false,
+                processData:false,
+                dataType : 'json',
+                beforeSend:function () {
+                    layer.load()
+                },
+                success : function(data) {
+                    // 成功提示框
+                    if (data.code == 0){
+                        layer.closeAll();
+                        parent.layer.msg(data.msg
+                            , {offset:['100px'],
+						        icon : 6,
+                                time:4000
+					    });
+                        parent.layer.closeAll('iframe');
+                    }else if(data.code == 502){
+                        layer.closeAll();
+                        parent.layer.msg(data.msg, {
+                            offset:['100px'],
+						icon : 5
+					});
+                    }
+                },
+                complete:function () {
+                    // 增加样式
+                    $('.site-demo-active').removeClass(DISABLED);
+                    // 增加属性
+                    $('.site-demo-active').attr('disabled', false);
+                }
+            });
+        })
+
+    });
+</script>
+</body>
+</html>

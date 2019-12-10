@@ -1,0 +1,75 @@
+<html>
+	<head>
+	    <meta charset="utf-8"/>
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	    <link href="/static/css/mainpage.css" rel="stylesheet" />
+	    <link href="/static/css/carddetail.css" rel="stylesheet" />
+        <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+        <script src="/static/layui/layui.js"></script>
+	    <link rel="shortcut icon" href="favicon.ico"/>
+
+		<script type="text/javascript">
+    </script>
+	</head>
+	<body  class="fixed-sidebar full-height-layout gray-bg" >
+    <div class="modal-body">
+    </div>
+        <div>
+            <div class="col-lg-12">
+                <p style="line-height: 20px; font-size: 25px" >
+                    <span style="color: rgb(148,17,36);">卡金额状态:</span>
+                    <div style="padding-top: 20px; font-size: 18px">
+                        总余额: {{ balance }}</div>
+                    <div style="padding-top: 20px; font-size: 18px">
+                        交易冻结: {{ freeze_fee_all }}</div>
+                    <div style="padding-top: 20px; font-size: 18px; color: #007DDB">
+                        可用余额: {{ remain }}</div>
+                </p>
+            </div>
+        </div>
+
+
+        <div class="" style="padding-top: 20px; font-size: 25px; color: red;">
+                以下是该卡的消费记录:
+        </div>
+    <div class="layui-form">
+      <table class="layui-table" lay-skin="nob" lay-size="sm">
+        <colgroup>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>交易订单号</th>
+            <th>交易类型</th>
+            <th>交易时间</th>
+            <th>商户名称</th>
+            <th>交易地金额</th>
+            <th>交易地币种</th>
+            <th>授权结算金额</th>
+            <th>结算金额</th>
+            <th>结算币种</th>
+            <th>交易状态</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for i in pay_list %}
+            <tr>
+                <td>{{ i.trade_no }}</td>
+                <td>{{ i.trans_type }}</td>
+                <td>{{ i.trans_local_time }}</td>
+                <td>{{ i.merchant_name }}</td>
+                <td>{{ i.trans_amount }}</td>
+                <td>{{ i.trans_currency_type }}</td>
+                <td>{{ i.auth_settle_amount }}</td>
+                <td>{{ i.settle_amount }}</td>
+                <td>{{ i.settle_currency_type }}</td>
+                <td>{{ i.trans_status }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+  </table>
+</div>
+
+
+	</body>
+
