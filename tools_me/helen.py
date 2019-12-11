@@ -296,7 +296,7 @@ if __name__ == '__main__':
     pay_passwd = '04A5E788'
     card_no = '64823085058061'
 
-    resp = qqf.trans_account_cinsume('5295871075609260', "04A5E788", '100')
+    resp = qqf.card_loss('5295871079966914', "f202f0", '12')
     print(resp)
     # resp = qqf.trans_account_recharge('5295871079074495', '2000')
 

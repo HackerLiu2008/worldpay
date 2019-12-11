@@ -227,14 +227,16 @@ def card_lock():
         resp_detail = resp.get('response_detail')
         card_status = resp_detail.get('card_status')
         pay_passwd = SqlData().search_card_field('pay_passwd', card_no)
+        # 卡正常状态就为挂失，其他状态默认解挂
         if card_status == "00":
             # 挂失
             do_type = DO_TYPE.CARD_LOCK
-        elif card_status == '11':
+        # elif card_status == '11':
             # 解挂
-            do_type = DO_TYPE.CARD_OPEN
         else:
-            return jsonify({'code': RET.SERVERERROR, 'msg': '服务器繁忙请稍后在试!'})
+            do_type = DO_TYPE.CARD_OPEN
+        # else:
+            # return jsonify({'code': RET.SERVERERROR, 'msg': '服务器繁忙请稍后在试!'})
         resp = QuanQiuFu().card_loss(card_no, pay_passwd, do_type)
         resp_code = resp.get('resp_code')
         if resp_code == '0000':
