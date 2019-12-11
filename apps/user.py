@@ -238,6 +238,13 @@ def card_lock():
         resp = QuanQiuFu().card_loss(card_no, pay_passwd, do_type)
         resp_code = resp.get('resp_code')
         if resp_code == '0000':
+            card_str = ''
+            if card_status == '00':
+                card_str = '冻结'
+            if card_status == '11':
+                card_str = '正常'
+            SqlData().update_card_info_card_no('status', card_str, card_no)
+
             return jsonify({'code': RET.OK, 'msg': MSG.OK})
         else:
             return jsonify({'code': RET.SERVERERROR, 'msg': '服务器繁忙请稍后在试!'})
@@ -262,6 +269,14 @@ def refund_balance():
         results = {"code": RET.OK, "msg": MSG.OK}
         if resp_code == "0000":
             user_id = g.user_id
+
+            try:
+                detail = resp.get('response_detail')
+                remain = int(detail.get('balance')) / 100
+                SqlData().update_card_remain('remain', remain, card_no)
+            except Exception as e:
+                logging.error('退款更新卡余额失败！' + str(e))
+
             refund = SqlData().search_user_field('refund', user_id)
             hand_money = round(refund * float(data), 2)
             do_money = round(float(data) - hand_money, 2)
@@ -347,6 +362,12 @@ def top_up():
     resp = QuanQiuFu().trans_account_recharge(card_no, money)
     resp_code = resp.get('resp_code')
     if resp_code == '0000':
+        try:
+            detail = resp.get('response_detail')
+            remain = int(detail.get('balance')) / 100
+            SqlData().update_card_remain('remain', remain, card_no)
+        except Exception as e:
+            logging.error('充值后更新卡余额失败！' + str(e))
         top_money = int(top_money)
         # 查询账户操作前的账户余额
         before_balance = SqlData().search_user_field('balance', user_id)
@@ -487,6 +508,9 @@ def create_some():
             if resp_code == '0000':
                 top_money = int(limit)
 
+                # 更新卡缓存余额
+                SqlData().update_card_remain('remain', top_money, card_no)
+
                 # 查询账户操作前的账户余额
                 before_balance = SqlData().search_user_field('balance', user_id)
 
@@ -597,7 +621,6 @@ def create_card():
             card_verify_code = re_de.get('card_verify_code')
         SqlData().update_card_info(card_no, pay_passwd, n_time, card_name, label, expire_date, card_verify_code, user_id, activation)
 
-        before_balance = SqlData().search_user_field('balance', user_id)
         money = str(int(float(top_money) * 100))
 
         # 给卡里充值金额,及更新相关信息
@@ -605,6 +628,8 @@ def create_card():
         resp_code = resp.get('resp_code')
         if resp_code == '0000':
             top_money = float(top_money)
+
+            SqlData().update_card_remain('remain', top_money, card_no)
             # 查询账户操作前的账户余额
             before_balance = SqlData().search_user_field('balance', user_id)
 
@@ -861,7 +886,8 @@ def card_info():
     for i in range(0, len(info), int(limit)):
         page_list.append(info[i:i + int(limit)])
     data = page_list[int(page) - 1]
-    data = get_card_remain(data)
+    if card_name or card_num or label or range_time:
+        data = get_card_remain(data)
     results['data'] = data
     results['count'] = len(info)
     return jsonify(results)
@@ -1173,6 +1199,7 @@ def login():
                 if user_pass == pass_word:
                     session['user_id'] = user_id
                     session['name'] = name
+                    session.permanent = True
                     return jsonify(results)
                 else:
                     results['code'] = RET.SERVERERROR

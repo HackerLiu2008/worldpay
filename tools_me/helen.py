@@ -1,6 +1,8 @@
 import hashlib
 import logging
 import os
+import random
+
 import rsa
 from Crypto.PublicKey import RSA
 from Crypto.Signature import PKCS1_v1_5
@@ -25,10 +27,14 @@ class QuanQiuFu(object):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        # proxies = {
-        #     'http': 'http://159.138.55.160:27926'
-        # }
-        res = requests.post(self.url, data=data, headers=headers, timeout=20)
+        # 使用随机代理访问（proxy_1:阿里云代理， proxy_2:本地）
+        proxy_1 = 'http://47.101.129.140:8888'
+        proxy_2 = ''
+        ls = [proxy_1, proxy_2]
+        proxies = {
+            'http': ls[random.randint(0, len(ls)-1)]
+        }
+        res = requests.post(self.url, data=data, headers=headers, proxies=proxies, timeout=20)
         return res
 
     def rsa_sign(self, data):
@@ -290,7 +296,7 @@ if __name__ == '__main__':
     pay_passwd = '04A5E788'
     card_no = '64823085058061'
 
-    resp = qqf.api_requests({})
+    resp = qqf.trans_account_cinsume('5295871075609260', "04A5E788", '100')
     print(resp)
     # resp = qqf.trans_account_recharge('5295871079074495', '2000')
 

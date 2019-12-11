@@ -11,7 +11,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 app.config['SECRET_KEY'] = 'Gute9878934'
 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=60*60*6)
 
 app.app_context().push()
 # CSRFProtect(app)

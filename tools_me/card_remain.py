@@ -30,9 +30,36 @@ def loop(card_info):
                 break
             else:
                 search_num += 1
+        card_status_num = 0
+        c_s = '查询失败！'
+        while True:
+            card_status = QuanQiuFu().card_status_query(card_no)
+            if card_status.get('resp_code') == '0000':
+                detail = card_status.get('response_detail')
+                card_status = detail.get('card_status')
+                if card_status == '00':
+                    c_s = '正常'
+                elif card_status == '11':
+                    c_s = '冻结'
+                elif card_status == '99':
+                    c_s = '注销'
+                elif card_status == '10':
+                    c_s = '锁定'
+                else:
+                    c_s = card_status
+                break
+            elif card_status_num > 2:
+                break
+            else:
+                card_status_num += 1
+
+
     except:
         remain = 0
+        c_s = '查询失败！'
+    print(card_no, remain, c_s)
     SqlData().update_card_remain('remain', float(remain), card_no)
+    SqlData().update_card_info_card_no('status', c_s, card_no)
     return
 
 
@@ -61,5 +88,6 @@ def get_card_remain(loops):
 if __name__ == '__main__':
     # print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     card_info = SqlData().search_card_info_admin('WHERE card_no is not null')
+    print(card_info)
     get_card_remain(card_info)
     # print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))

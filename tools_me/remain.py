@@ -1,5 +1,5 @@
 # coding:utf-8
-
+import time
 from threading import Lock
 import operator
 import threading
@@ -61,6 +61,7 @@ def get_card_remain(loops):
         n += 1
     lock.acquire()
     while True:
+        time.sleep(0.3)
         loops_len = len(loops)
         num = 5
         if loops_len < 5:

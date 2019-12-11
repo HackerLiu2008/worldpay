@@ -4,11 +4,11 @@ import logging
 
 class SqlData(object):
     def __init__(self):
-        host = "114.116.236.27"
+        host = "127.0.0.1"
         port = 3306
         user = "root"
-        password = "gute123"
-        # password = "admin"
+        # password = "gute123"
+        password = "admin"
         database = "world_pay"
         self.connect = pymysql.Connect(
             host=host, port=port, user=user,
@@ -227,6 +227,8 @@ class SqlData(object):
                     info_dict['cvv'] = "\t" + cvv
                 else:
                     info_dict['cvv'] = ""
+                info_dict['remain'] = i[9]
+                info_dict['card_status'] = i[10]
                 info_list.append(info_dict)
             return info_list
 
@@ -770,7 +772,10 @@ class SqlData(object):
         self.close_connect()
 
     def search_card_info_admin(self, sql_line):
-        sql = "SELECT * FROM card_info ORDER BY act_time DESC {}".format(sql_line)
+        if 'WHERE' in sql_line:
+            sql = "SELECT * FROM card_info {}  ORDER BY act_time DESC".format(sql_line)
+        else:
+            sql = "SELECT * FROM card_info ORDER BY act_time DESC {}".format(sql_line)
         self.cursor.execute(sql)
         rows = self.cursor.fetchall()
         info_list = list()
@@ -792,8 +797,8 @@ class SqlData(object):
             info_dict['label'] = i[6]
             info_dict['expire'] = i[7]
             info_dict['cvv'] = i[8]
-            if i[9]:
-                name = self.search_user_field('name', i[9])
+            if i[11]:
+                name = self.search_user_field('name', i[11])
                 info_dict['account_name'] = name
             else:
                 info_dict['account_name'] = ""
@@ -1049,24 +1054,6 @@ class SqlData(object):
         self.cursor.execute(sql)
         self.connect.commit()
         self.close_connect()
-
-    def update_1(self, hand_money, u_id):
-        sql = "UPDATE account_trans SET hand_money={} WHERE id={}".format(hand_money, u_id)
-        try:
-            self.cursor.execute(sql)
-            self.connect.commit()
-        except Exception as e:
-            logging.error("确认充值状态失败!" + str(e))
-            self.connect.rollback()
-
-    def search_1(self):
-        sql = "SELECT id, hand_money FROM account_trans WHERE hand_money<0"
-        self.cursor.execute(sql)
-        rows = self.cursor.fetchall()
-        if not rows:
-            return False
-        for i in rows:
-            s.update_1(abs(i[1]), i[0])
 
     # 推送信息相关----------------------
     def insert_push_log(self, trade_no, card_no, trans_type, timestamp, local_merchant_name, trans_amount,

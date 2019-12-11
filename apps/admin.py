@@ -1027,7 +1027,7 @@ def admin_login():
             data = json.loads(request.form.get('data'))
             account = data.get('account')
             password = data.get('password')
-            if account == 'Lina' and password == 'goodsaler123':
+            if account == 'Lina' and password == 'omg121!':
                 session['admin_id'] = 2
                 session['admin_name'] = account
                 results['code'] = 200

@@ -64,8 +64,8 @@ msg = Parser().parsestr(msg_content)
 # 关闭连接:
 server.quit()
 '''
-
-s = "http://127.0.0.1:5000/user/register/?middle_key=eWFuZ2ppbmxp"
+while True:
+    print(random.randint(0, 2))
 
 
 
