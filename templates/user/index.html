@@ -217,7 +217,7 @@
         </form>
             </div>
         <blockquote class="layui-elem-quote layui-quote-nm" style="float: right">
-            <span >提示: 此界面涉及查询卡余额信息!导致页面加载较慢,请耐心等待!</span>
+            <span ><span style="color:#C71585">卡列表余额为近期的缓存余额，</span><span style="color:#4B0082">查找搜索/双击详情后的余额为即时余额！</span></span>
         </blockquote>
         </div>
         <table class="layui-table" id="card_info" lay-filter="card_info"></table>
@@ -280,7 +280,7 @@
             </div>
 
             <blockquote class="layui-elem-quote layui-quote-nm" style="float: right">
-                    <span style="color:red;">提示: 交易记录仅记录近30天!如有需要请下载保存!</span>
+                <span ><span style="color:red;">提示:</span> 交易记录仅记录近180天!如有需要请下载保存!</span>
                 </blockquote>
             </div>
 
@@ -389,9 +389,9 @@
 
         laydate.render({
             elem: '#range_time'
-            ,value: getDay(-30) + " - " + getDay(0)
+            ,value: getDay(-180) + " - " + getDay(0)
             ,isInitValue: true
-            ,min: -30
+            ,min: -180
             ,max: 0
             ,range:true
             ,theme:'#7CCD7C'

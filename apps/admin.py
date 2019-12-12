@@ -931,35 +931,65 @@ def middle_list():
 @admin_blueprint.route('/middle_detail/', methods=['GET'])
 @admin_required
 def middle_detail():
-    page = request.args.get('page')
-    limit = request.args.get('limit')
-    middle_name = request.args.get('middle_name')
-    middle_id = SqlData().search_middle_name('id', middle_name)
-    account_list = SqlData().search_user_field_middle(middle_id)
-    results = dict()
-    if not account_list:
+    try:
+        page = request.args.get('page')
+        limit = request.args.get('limit')
+        middle_name = request.args.get('middle_name')
+        middle_id = SqlData().search_middle_name('id', middle_name)
+        account_list = SqlData().search_user_field_middle(middle_id)
+        results = dict()
+        if not account_list:
+            results['code'] = RET.OK
+            results['msg'] = MSG.NODATA
+            return jsonify(results)
+        data = list()
+        for n in account_list:
+            u_id = n.get('id')
+            card_count = SqlData().search_card_count(u_id, '')
+            n['card_count'] = card_count
+            data.append(n)
+        page_list = list()
+        for i in range(0, len(data), int(limit)):
+            page_list.append(data[i:i + int(limit)])
         results['code'] = RET.OK
-        results['msg'] = MSG.NODATA
+        results['data'] = page_list[int(page) - 1]
+        results['count'] = len(data)
         return jsonify(results)
-    data = list()
-    for n in account_list:
-        u_id = n.get('id')
-        card_count = SqlData().search_card_count(u_id, '')
-        n['card_count'] = card_count
-        data.append(n)
-    page_list = list()
-    for i in range(0, len(data), int(limit)):
-        page_list.append(data[i:i + int(limit)])
+    except Exception as e:
+        logging.error('统计近30天消费异常' + str(e))
+        return jsonify({'code': RET.SERVERERROR})
+
+
+@admin_blueprint.route('/line_chart_consume', methods=['GET'])
+@admin_required
+@cache.cached(timeout=21600, key_prefix='GuteHelen321')
+def consume_line():
+    # 展示近三十天开卡数量
+    day_num = 30
+    day_list = get_nday_list(day_num)
+    top_list = list()
+    consume_list = list()
+    for d in day_list:
+        t_range = "WHERE do_type='充值' AND do_date BETWEEN '" + str(d) + ' 00:00:00' + "'" + " AND '" + str(d) \
+                  + " 23:59:59'"
+        do_money = SqlData().search_account_consume('do_money', 'account_trans', t_range)
+        t_range_1 = "WHERE timestamp BETWEEN '" + str(d) + ' 00:00:00' + "'" + " AND '" + str(d) + " 23:59:59'"
+        consume = SqlData().search_account_consume('settle_amount', 'push_log', t_range_1)
+        top_list.append(do_money)
+        consume_list.append(consume)
+    series = [{'name': '总充值', 'data': top_list}, {'name': '实际消费', 'data': consume_list}]
+    results = dict()
     results['code'] = RET.OK
-    results['data'] = page_list[int(page) - 1]
-    results['count'] = len(data)
+    results['msg'] = MSG.OK
+    results['data'] = series
+    results['xAx'] = day_list
     return jsonify(results)
 
 
 @admin_blueprint.route('/line_chart', methods=['GET'])
 @admin_required
 @cache.cached(timeout=21600, key_prefix='GuteHelen')
-def test():
+def create_card_line():
     # 展示近三十天开卡数量
     day_num = 30
     day_list = get_nday_list(day_num)

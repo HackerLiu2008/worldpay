@@ -1132,6 +1132,12 @@ class SqlData(object):
             self.connect.rollback()
         self.close_connect()
 
+    def search_account_consume(self, field, table_name, sql_line):
+        sql = "SELECT SUM({}) FROM {} {}".format(field, table_name, sql_line)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        return rows[0][0]
+
     # ------------------操作注册套餐的方法-----
 
     def search_reg_package(self):

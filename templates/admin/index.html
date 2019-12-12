@@ -97,6 +97,7 @@
   <div class="layui-tab-content" style="height: 100%;">
       <div class="layui-tab-item layui-show">
         <div id="month" style="width: 100%; height: 1000px; margin: 0 auto"></div>
+        <div id="consume" style="width: 100%; height: 1000px; margin: 0 auto"></div>
   </div>
     <div class="layui-tab-item">
 
@@ -627,6 +628,91 @@
                     });
                 }
             });
+        });
+
+        $(document).ready(function () {
+            var chart = {
+      type: 'column'
+   };
+   var title = {
+      text: '近30天客户充值和消费统计'
+   };
+   var subtitle = {
+      text: 'Source: 用户充值记录，消费推送记录'
+   };
+
+   var yAxis = {
+      min: 0,
+      title: {
+         text: '金额($)'
+      }
+   };
+   var tooltip = {
+      headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+         '<td style="padding:0"><b>{point.y:.1f} $</b></td></tr>',
+      footerFormat: '</table>',
+      shared: true,
+      useHTML: true
+   };
+   var plotOptions = {
+      column: {
+         pointPadding: 0.2,
+         borderWidth: 0
+      }
+   };
+   var credits = {
+      enabled: false
+   };
+
+   var series= [];
+
+
+            $.ajax({
+                type : 'GET',
+                url : '/admin/line_chart_consume',
+                dataType : 'json',
+                success : function(data) {
+                    // 成功提示框
+                    if (data.code == 0){
+                        var info = data.data,
+                            xax = data.xAx,
+                            xAxis = {categories: xax, crosshair: true};
+                        for (var i=0; i<info.length;i++){
+                            var name = info[i].name;
+                            var data1 = info[i].data;
+                            var s = {name:name,data:data1};
+                            series.push(s);
+                        }
+                        console.log(series)
+                        var json = {};
+                       json.chart = chart;
+                       json.title = title;
+                       json.subtitle = subtitle;
+                       json.tooltip = tooltip;
+                       json.xAxis = xAxis;
+                       json.yAxis = yAxis;
+                       json.series = series;
+                       json.plotOptions = plotOptions;
+                       json.credits = credits;
+                       $('#consume').highcharts(json);
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+                        icon : 5
+                    });
+                    }
+
+                },
+                error : function(data) {
+                    // 异常提示
+                    parent.layer.msg('出现网络故障', {
+                        icon : 5
+                    });
+                }
+            });
+
+
+
         });
 
 
