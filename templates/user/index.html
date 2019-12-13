@@ -102,6 +102,7 @@
     <li lay-id="4">交易记录</li>
     <li lay-id="5">账户充值记录</li>
     <li lay-id="6">卡消费记录</li>
+    <li lay-id="7">账户退款</li>
   </ul>
   <div class="layui-tab-content" style="height: 100%;">
       <div class="layui-tab-item layui-show">
@@ -291,6 +292,10 @@
           </div>
       </div>
 
+      <div class="layui-tab-item">
+          账户退款界面
+      </div>
+
   </div>
 </div>
 
@@ -319,13 +324,22 @@
       </ul>
 
         <ul class="layui-nav layui-nav-tree">
-        <li class="layui-nav-item layui-nav-itemed">
-          <a class="" href="javascript:">卡消费记录</a>
-          <dl class="layui-nav-child">
-            <dd><a href="javascript:" id="push_but">卡交易记录</a></dd>
-          </dl>
-        </li>
-      </ul>
+            <li class="layui-nav-item layui-nav-itemed">
+              <a class="" href="javascript:">卡消费记录</a>
+              <dl class="layui-nav-child">
+                <dd><a href="javascript:" id="push_but">卡交易记录</a></dd>
+              </dl>
+            </li>
+        </ul>
+
+        <ul class="layui-nav layui-nav-tree">
+            <li class="layui-nav-item layui-nav-itemed">
+              <a class="" href="javascript:">账户资金</a>
+              <dl class="layui-nav-child">
+                <dd><a href="javascript:" id="cus_refund">账户退款</a></dd>
+              </dl>
+            </li>
+        </ul>
         <div >
             <p>&nbsp;&nbsp;</p>
             <p>&nbsp;&nbsp;</p>
@@ -362,6 +376,33 @@
             , element = layui.element //元素操作
             , $ = layui.$
             , form = layui.form;
+
+        $(document).ready(function () {
+
+            var userName = '{{ tip_context }}';
+            if (typeof userName == 'undefined' || userName == null || userName == ''){
+                return true
+            }else{
+                layer.open({
+                type: 1
+                , title: false //不显示标题栏
+                , closeBtn: false
+                , area: '300px;'
+                , shade: 0.8
+                , id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                , btn: ['火速围观', '残忍拒绝']
+                , btnAlign: 'c'
+                , moveType: 1 //拖拽模式，0或者1
+                , content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">'+userName+'<br>layer ≠ layui<br><br>layer只是作为Layui的一个弹层模块，由于其用户基数较大，所以常常会有人以为layui是layerui<br><br>layer虽然已被 Layui 收编为内置的弹层模块，但仍然会作为一个独立组件全力维护、升级。<br><br>我们此后的征途是星辰大海 ^_^</div>'
+                , success: function (layero) {
+                    var btn = layero.find('.layui-layer-btn');
+                    btn.find('.layui-layer-btn0').attr({href: 'http://www.layui.com/', target:'_blank'});
+                }
+            })
+            }
+
+        });
+
 
 
         function getDay(day){
@@ -769,7 +810,9 @@
         $('#push_but').on('click',function () {
            element.tabChange('demo', 6);
         });
-
+        $('#cus_refund').on('click',function () {
+           element.tabChange('demo', 7);
+        });
 
 
         table.on('rowDouble(card_info)', function(obj){

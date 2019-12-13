@@ -16,6 +16,10 @@ from . import admin_blueprint
 @admin_blueprint.route('/add_package/', methods=['GET', 'POST'])
 @admin_required
 def add_package():
+    '''
+    添加注册套餐接口
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/add_package.html')
     if request.method == 'POST':
@@ -38,6 +42,10 @@ def add_package():
 @admin_blueprint.route('/package_change/', methods=['GET', 'POST'])
 @admin_required
 def package_change():
+    '''
+    修改套餐价格和其他参数
+    :return:
+    '''
     if request.method == 'GET':
         package = request.args.get('package')
         field = request.args.get('field')
@@ -56,6 +64,10 @@ def package_change():
 @admin_blueprint.route('/reg_money.json', methods=['GET', 'POST'])
 @admin_required
 def reg_money():
+    '''
+    获取所有的注册套餐
+    :return:
+    '''
     if request.method == 'GET':
         data = SqlData().search_reg_all()
         results = dict()
@@ -68,6 +80,10 @@ def reg_money():
 @admin_blueprint.route('/reg_package/', methods=['GET', 'POST'])
 @admin_required
 def reg_package():
+    '''
+    编辑注册界面
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/reg_package.html')
 
@@ -75,12 +91,20 @@ def reg_package():
 @admin_blueprint.route('/vice_index/', methods=['GET'])
 @admin_required
 def vice_index():
+    '''
+    财务的主界面
+    :return:
+    '''
     return render_template('admin/vice_index.html')
 
 
 @admin_blueprint.route('/push_log/', methods=['GET'])
 @admin_required
 def push_log():
+    '''
+    卡交易推送接口
+    :return:
+    '''
     try:
         page = request.args.get('page')
         limit = request.args.get('limit')
@@ -88,7 +112,6 @@ def push_log():
         range_time = request.args.get('range_time')
         card_no = request.args.get('card_no')
         trans_type = request.args.get('trans_type')
-        sql = ""
         if range_time:
             start_time = range_time.split(" - ")[0]
             end_time = range_time.split(" - ")[1] + ' 23:59:59'
@@ -135,6 +158,10 @@ def push_log():
 
 @admin_blueprint.route('/transation/', methods=['POST', 'GET'])
 def transation():
+    '''
+    接受全球付的交易推送接口（接收全球付API推送的信息）
+    :return:
+    '''
     if request.method == 'POST':
         data = request.form
         # 易票联支付平台交易号
@@ -195,6 +222,10 @@ def transation():
 @admin_blueprint.route('/edit_code/', methods=['GET', 'POST'])
 @admin_required
 def edit_code():
+    '''
+    首款码的展示界面
+    :return:
+    '''
     if request.method == 'GET':
         try:
             url = request.args.get('url')
@@ -217,6 +248,10 @@ def edit_code():
 @admin_blueprint.route('/upload_code/', methods=['POST'])
 @admin_required
 def up_pay_pic():
+    '''
+    上传收款码的接口
+    :return:
+    '''
     results = {'code': RET.OK, 'msg': MSG.OK}
     file = request.files.get('file')
     file_name = sum_code() + ".png"
@@ -239,6 +274,10 @@ def up_pay_pic():
 @admin_blueprint.route('/qr_info/', methods=['GET'])
 @admin_required
 def qr_info():
+    '''
+    首款码截图接口
+    :return:
+    '''
     results = dict()
     results['code'] = RET.OK
     results['msg'] = MSG.OK
@@ -254,6 +293,10 @@ def qr_info():
 @admin_blueprint.route('/qr_code/', methods=['GET', 'POST'])
 @admin_required
 def qr_code():
+    '''
+    首款码界面
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/qr_code.html')
 
@@ -261,6 +304,10 @@ def qr_code():
 @admin_blueprint.route('/notice_edit/', methods=['GET', 'POST'])
 @admin_required
 def notice():
+    '''
+    通告的编辑
+    :return:
+    '''
     if request.method == 'GET':
         note = SqlData().search_admin_field('notice')
         context = dict()
@@ -276,6 +323,10 @@ def notice():
 @admin_blueprint.route('/del_acc/', methods=['POST'])
 @admin_required
 def del_account():
+    '''
+    删除用户接口
+    :return:
+    '''
     try:
         data = json.loads(request.form.get('data'))
         user_name = data.get('user_name')
@@ -322,6 +373,10 @@ def cus_log():
 @admin_blueprint.route('/account_trans/', methods=['GET'])
 @admin_required
 def account_trans():
+    '''
+    客户交易记录
+    :return:
+    '''
     page = request.args.get('page')
     limit = request.args.get('limit')
 
@@ -370,6 +425,10 @@ def account_trans():
 @admin_blueprint.route('/card_all', methods=['GET'])
 @admin_required
 def card_info_all():
+    '''
+    所有卡信息
+    :return:
+    '''
     try:
         limit = request.args.get('limit')
         page = request.args.get('page')
@@ -406,6 +465,10 @@ def card_info_all():
 @admin_blueprint.route('/sub_middle_money', methods=['POST'])
 @admin_required
 def sub_middle_money():
+    '''
+    确认中介佣金支付
+    :return:
+    '''
     info_id = request.args.get('id')
     n_time = xianzai_time()
     SqlData().update_middle_sub('已确认', n_time, int(info_id))
@@ -415,6 +478,10 @@ def sub_middle_money():
 @admin_blueprint.route('/middle_money', methods=['GET'])
 @admin_required
 def middle_money():
+    '''
+    中介佣金信息列表
+    :return:
+    '''
     try:
         limit = request.args.get('limit')
         page = request.args.get('page')
@@ -442,6 +509,10 @@ def middle_money():
 @admin_blueprint.route('/card_info/', methods=['GET'])
 @admin_required
 def card_info():
+    '''
+    所有卡信息列表
+    :return:
+    '''
     limit = request.args.get('limit')
     page = request.args.get('page')
     user_id = request.args.get('u_id')
@@ -466,6 +537,10 @@ def card_info():
 @admin_blueprint.route('/acc_to_middle/', methods=['GET', 'POST'])
 @admin_required
 def acc_to_middle():
+    '''
+    帮定客户到中介名下
+    :return:
+    '''
     if request.method == 'GET':
         middle_name = request.args.get('middle_name')
         # 查询没有绑定中介的客户
@@ -524,6 +599,10 @@ def acc_to_middle():
 @admin_blueprint.route('/middle_link/', methods=['GET'])
 @admin_required
 def middle_link():
+    '''
+    生成链接注册的唯一标识（该链接注册直接绑定到中介名下）
+    :return:
+    '''
     middle_name = request.args.get('middle_name')
     middle_account = request.args.get('middle_account')
     middle_id = SqlData().search_middle_name('id', middle_name)
@@ -537,6 +616,10 @@ def middle_link():
 @admin_blueprint.route('/middle_info/', methods=['GET'])
 @admin_required
 def middle_info():
+    '''
+    中介信息列表
+    :return:
+    '''
     page = request.args.get('page')
     limit = request.args.get('limit')
     results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
@@ -556,6 +639,10 @@ def middle_info():
 @admin_blueprint.route('/add_middle/', methods=['POST'])
 @admin_required
 def add_middle():
+    '''
+    添加中介
+    :return:
+    '''
     results = {"code": RET.OK, "msg": MSG.OK}
     try:
         data = json.loads(request.form.get('data'))
@@ -589,6 +676,10 @@ def add_middle():
 @admin_blueprint.route('/add_account/', methods=['POST'])
 @admin_required
 def add_account():
+    '''
+    添加客户账号
+    :return:
+    '''
     results = {"code": RET.OK, "msg": MSG.OK}
     try:
         data = json.loads(request.form.get('data'))
@@ -631,6 +722,10 @@ def add_account():
 @admin_blueprint.route('/top_msg', methods=['GET', 'POST'])
 @admin_required
 def top_msg():
+    '''
+    编辑充值通知的邮箱
+    :return:
+    '''
     if request.method == 'GET':
         push_json = SqlData().search_admin_field('top_push')
         info_list = list()
@@ -671,6 +766,10 @@ def top_msg():
 @admin_blueprint.route('/ex_change', methods=['GET', 'POST'])
 @admin_required
 def ex_change():
+    '''
+    汇率的编辑
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/exchange_edit.html')
     if request.method == 'POST':
@@ -698,6 +797,10 @@ def ex_change():
 @admin_blueprint.route('/change_pass', methods=['GET', 'POST'])
 @admin_required
 def change_pass():
+    '''
+    更换登陆密码
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/admin_edit.html')
     if request.method == 'POST':
@@ -722,6 +825,10 @@ def change_pass():
 @admin_blueprint.route('/admin_info', methods=['GET'])
 @admin_required
 def admin_info():
+    '''
+    终端的信息展示
+    :return:
+    '''
     account, password, name, balance = SqlData().admin_info()
     context = dict()
     context['account'] = account
@@ -734,6 +841,10 @@ def admin_info():
 @admin_blueprint.route('/top_history', methods=['GET'])
 @admin_required
 def top_history():
+    '''
+    客户账号充值历史
+    :return:
+    '''
     page = request.args.get('page')
     limit = request.args.get('limit')
 
@@ -810,6 +921,10 @@ def top_history():
 @admin_blueprint.route('/top_up', methods=['POST'])
 @admin_required
 def top_up():
+    '''
+    客户充值接口
+    :return:
+    '''
     results = {"code": RET.OK, "msg": MSG.OK}
     try:
         data = request.form.get('money')
@@ -844,6 +959,10 @@ def top_up():
 @admin_blueprint.route('/edit_parameter', methods=['GET', 'POST'])
 @admin_required
 def edit_parameter():
+    '''
+    修改客户的收费参数
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/edit_parameter.html')
     if request.method == 'POST':
@@ -883,6 +1002,10 @@ def edit_parameter():
 @admin_blueprint.route('/account_info', methods=['GET'])
 @admin_required
 def account_info():
+    '''
+    客户信息列表
+    :return:
+    '''
     page = request.args.get('page')
     limit = request.args.get('limit')
     customer = request.args.get('customer')
@@ -913,6 +1036,10 @@ def account_info():
 @admin_blueprint.route('/card_list_html', methods=['GET'])
 @admin_required
 def card_list_html():
+    '''
+    卡信息列表
+    :return:
+    '''
     user_id = request.args.get('user_id')
     context = dict()
     context['user_id'] = user_id
@@ -922,6 +1049,10 @@ def card_list_html():
 @admin_blueprint.route('/middle_list/', methods=['GET'])
 @admin_required
 def middle_list():
+    '''
+    中介信息界面
+    :return:
+    '''
     middle_name = request.args.get('middle_name')
     context = dict()
     context['middle_name'] = middle_name
@@ -931,6 +1062,10 @@ def middle_list():
 @admin_blueprint.route('/middle_detail/', methods=['GET'])
 @admin_required
 def middle_detail():
+    '''
+    中介信息详情
+    :return:
+    '''
     try:
         page = request.args.get('page')
         limit = request.args.get('limit')
@@ -964,6 +1099,10 @@ def middle_detail():
 @admin_required
 @cache.cached(timeout=21600, key_prefix='GuteHelen321')
 def consume_line():
+    '''
+    近期信息预览（所有客户的充值统计，消费统计）
+    :return:
+    '''
     # 展示近三十天开卡数量
     day_num = 30
     day_list = get_nday_list(day_num)
@@ -990,6 +1129,10 @@ def consume_line():
 @admin_required
 @cache.cached(timeout=21600, key_prefix='GuteHelen')
 def create_card_line():
+    '''
+    近期信息预览（开卡量）
+    :return:
+    '''
     # 展示近三十天开卡数量
     day_num = 30
     day_list = get_nday_list(day_num)
@@ -1038,6 +1181,10 @@ def create_card_line():
 @admin_blueprint.route('/logout', methods=['GET'])
 @admin_required
 def logout():
+    '''
+    注销
+    :return:
+    '''
     session.pop('admin_id')
     session.pop('admin_name')
     return render_template('admin/admin_login.html')
@@ -1045,6 +1192,10 @@ def logout():
 
 @admin_blueprint.route('/login', methods=['GET', 'POST'])
 def admin_login():
+    '''
+    登陆
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('admin/admin_login.html')
 

@@ -148,11 +148,15 @@ def top_up():
             phone = SqlData().search_user_field_name('phone_num', cus_name)
             mid_phone = SqlData().search_pay_code('phone', cus_name, pay_time)
 
-            # 给客户和代充值人发送短信通知
-            if phone:
+            # 判断是否是相同电话，是则只发送一次短信
+            if phone and mid_phone and phone == mid_phone:
                 CCP().send_Template_sms(phone, [cus_name, t, money], 478898)
-            if mid_phone:
-                CCP().send_Template_sms(mid_phone, [cus_name, t, money], 478898)
+            else:
+                # 给客户和代充值人发送短信通知
+                if phone:
+                    CCP().send_Template_sms(phone, [cus_name, t, money], 478898)
+                if mid_phone:
+                    CCP().send_Template_sms(mid_phone, [cus_name, t, money], 478898)
             results['code'] = RET.OK
             results['msg'] = MSG.OK
             return jsonify(results)

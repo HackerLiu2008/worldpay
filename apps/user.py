@@ -20,6 +20,11 @@ from tools_me.mysql_tools import SqlData
 @user_blueprint.route('/push_log/', methods=['GET'])
 @login_required
 def push_log():
+
+    '''
+    卡交易记录接口
+    '''
+
     try:
         user_id = g.user_id
         page = request.args.get('page')
@@ -75,6 +80,10 @@ def push_log():
 @user_blueprint.route('/xls_top/', methods=['POST'])
 @login_required
 def xls_top():
+    '''
+    表格批量充值接口
+    :return:
+    '''
     if request.method == 'POST':
         try:
             file = request.files.get('file')
@@ -183,6 +192,10 @@ def xls_top():
 @user_blueprint.route('/download/', methods=['GET'])
 @login_required
 def xls_download():
+    '''
+    批量充值模板
+    :return:
+    '''
     response = send_file(DIR_PATH.DOWNLOAD)
     return response
 
@@ -190,6 +203,10 @@ def xls_download():
 @user_blueprint.route('/make_up/', methods=['GET'])
 @login_required
 def make_up():
+    '''
+    补全卡信息接口（卡列表头部工具栏最右边那个笑脸）
+    :return:
+    '''
     try:
         user_id = g.user_id
         sql = "WHERE cvv='' OR expire='' AND account_id={}".format(str(user_id))
@@ -218,6 +235,10 @@ def make_up():
 @user_blueprint.route('/card_lock/', methods=['POST'])
 @login_required
 def card_lock():
+    '''
+    卡（锁定/解锁接口）
+    :return:
+    '''
     try:
         card_no = request.args.get('card_no')
         resp = QuanQiuFu().card_status_query(card_no)
@@ -258,6 +279,10 @@ def card_lock():
 @user_blueprint.route('/refund/', methods=['POST'])
 @login_required
 def refund_balance():
+    '''
+    卡退款接口
+    :return:
+    '''
     try:
         data = json.loads(request.form.get('data'))
         card_no = json.loads(request.form.get('card_no'))
@@ -317,6 +342,10 @@ def refund_balance():
 @user_blueprint.route('/account_trans/', methods=['GET'])
 @login_required
 def account_trans():
+    '''
+    账户交易记录
+    :return:
+    '''
     page = request.args.get('page')
     limit = request.args.get('limit')
 
@@ -349,6 +378,10 @@ def account_trans():
 @user_blueprint.route('/top_up/', methods=['POST'])
 @login_required
 def top_up():
+    '''
+    卡充值接口
+    :return:
+    '''
     data = json.loads(request.form.get('data'))
     user_id = g.user_id
     card_no = data.get('card_no')
@@ -394,7 +427,10 @@ def top_up():
 @login_required
 # @choke_required
 def create_some():
-
+    '''
+    批量开卡接口
+    :return:
+    '''
     # print(session.get('create'))
     data = json.loads(request.form.get('data'))
     card_num = data.get('card_num')
@@ -542,6 +578,10 @@ def create_some():
 @login_required
 # @choke_required
 def create_card():
+    '''
+    单卡开卡
+    :return:
+    '''
     data = json.loads(request.form.get('data'))
     card_name = data.get('card_name')
     top_money = data.get('top_money')
@@ -659,6 +699,10 @@ def create_card():
 @user_blueprint.route('/top_history/', methods=['GET'])
 @login_required
 def top_history():
+    '''
+    客户历史充值记录
+    :return:
+    '''
     page = request.args.get('page')
     limit = request.args.get('limit')
     user_id = g.user_id
@@ -680,7 +724,7 @@ def top_history():
 @user_blueprint.route('/', methods=['GET'])
 @login_required
 def account_html():
-
+    # 用户主页端
     '''
     #关闭系统时,返回的信息
     return "<html><div style='position:absolute;z-index:99;padding-top:346px;left:50%;margin-left:-600px;'>" \
@@ -704,7 +748,7 @@ def account_html():
     s = xianzai_time()
     res = verify_login_time(s, stop_time, range_s=2592000)
     if not res:
-        stop_string = '到期时间: ' + stop_time
+        stop_string = '账号使用权到期时间: ' + stop_time
     else:
         stop_string = ''
     out_money = SqlData().search_trans_sum(user_id)
@@ -737,14 +781,18 @@ def account_html():
     context['notice'] = notice
     context['free'] = free
     context['fail_pro'] = fail_pro
-    # print(context)
     context['stop_time'] = stop_string
+    context['tip_context'] = ''
     return render_template('user/index.html', **context)
 
 
 @user_blueprint.route('/change_phone', methods=['GET'])
 @login_required
 def change_phone():
+    '''
+    更改电话的接口
+    :return:
+    '''
     user_id = g.user_id
     phone_num = request.args.get('phone_num')
     results = dict()
@@ -763,6 +811,10 @@ def change_phone():
 @user_blueprint.route('/one_card_detail', methods=['GET'])
 # @login_required
 def one_detail():
+    '''
+    卡的详情界面接口（交易记录，和余额）
+    ：return
+    '''
     try:
         context = dict()
         card_no = request.args.get('card_no')
@@ -817,12 +869,20 @@ def one_detail():
 @user_blueprint.route('/change_detail', methods=['GET'])
 @login_required
 def change_detail():
-    return render_template('user/edit_account.html')
+    '''
+    卡充值界面
+    :return:
+    '''
+    return render_template('user/card_top.html')
 
 
 @user_blueprint.route('/change_card_name', methods=['GET', 'POST'])
 @login_required
 def change_card_name():
+    '''
+    更改卡姓名和标签信息
+    :return:
+    '''
     if request.method == 'GET':
         return render_template('user/card_name.html')
     if request.method == 'POST':
@@ -898,12 +958,20 @@ def card_info():
 @user_blueprint.route('/edit_user', methods=['GET'])
 @login_required
 def ch_pass_html():
+    '''
+    编辑客户资料界面模板
+    :return:
+    '''
     return render_template('user/edit_user.html')
 
 
 @user_blueprint.route('/change_pass', methods=["POST"])
 @login_required
 def change_pass():
+    '''
+    更换用户密码
+    :return:
+    '''
     data = json.loads(request.form.get('data'))
     old_pass = data.get('old_pass')
     new_pass_one = data.get('new_pass_one')
@@ -921,6 +989,7 @@ def change_pass():
         return jsonify(results)
     if len(new_pass_one) < 6:
         results['code'] = RET.SERVERERROR
+
         results['msg'] = MSG.PSWDLEN
         return jsonify(results)
     try:
@@ -936,6 +1005,10 @@ def change_pass():
 @user_blueprint.route('/user_info', methods=['GET'])
 @login_required
 def user_info():
+    '''
+    用户基本资料界面
+    :return:
+    '''
     user_name = g.user_name
     user_id = g.user_id
     dict_info = SqlData().search_user_detail(user_id)
@@ -954,6 +1027,10 @@ def user_info():
 @user_blueprint.route('/logout', methods=['GET'])
 @login_required
 def logout():
+    '''
+    注销
+    :return:
+    '''
     session.pop('user_id')
     session.pop('name')
     return redirect('/user/')
@@ -961,6 +1038,10 @@ def logout():
 
 @user_blueprint.route('/package/', methods=['GET'])
 def package():
+    '''
+    查询不同套餐的对应的价格
+    :return:
+    '''
     key = request.args.get('key')
     data = SqlData().search_reg_money(key)
     money = data.get('money')
@@ -971,6 +1052,10 @@ def package():
 
 @user_blueprint.route('/register_pay/', methods=['GET', 'POST'])
 def pay_pic():
+    '''
+    用户注册支付姐界面
+    :return:
+    '''
     if request.method == 'GET':
         u_name = request.args.get('u_name')
         u_acc = request.args.get('u_acc')
@@ -1083,6 +1168,10 @@ def pay_pic():
 
 @user_blueprint.route('/register/', methods=['GET', 'POST'])
 def register():
+    '''
+    用户注册界面
+    :return:
+    '''
     if request.method == 'GET':
         middle_key = request.args.get('middle_key')
         if middle_key:
@@ -1153,6 +1242,10 @@ def register():
 
 @user_blueprint.route('/ver_code/', methods=['POST'])
 def ver_code_send():
+    '''
+    手机验证码的保存于验证
+    :return:
+    '''
     if request.method == 'POST':
         data = json.loads(request.form.get('data'))
         phone = data.get('phone')
@@ -1169,6 +1262,10 @@ def ver_code_send():
 
 @user_blueprint.route('/login', methods=['POST', 'GET'])
 def login():
+    '''
+    注册接口
+    :return:
+    '''
     if request.method == 'GET':
         context = dict()
         # 判断是否是通过中介链接过来的,是则保留middle_key

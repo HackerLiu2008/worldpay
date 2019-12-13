@@ -3,7 +3,7 @@ import re
 import uuid
 from flask import render_template, request, json, jsonify, session
 from tools_me.mysql_tools import SqlData
-from tools_me.other_tools import time_str, xianzai_time, pay_required, sum_code
+from tools_me.other_tools import xianzai_time, pay_required, sum_code
 from tools_me.parameter import RET, MSG, DIR_PATH
 from tools_me.send_email import send
 from . import pay_blueprint

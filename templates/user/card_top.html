@@ -44,7 +44,7 @@
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit="" lay-filter="formDemo" id="sub" type="submit">立即提交</button>
+                <button class="layui-btn site-demo-active" lay-submit="" lay-filter="formDemo" id="sub" type="submit">立即提交</button>
             </div>
         </div>
     </form>
@@ -52,13 +52,17 @@
 <script>
     layui.use(['form', 'layer'], function(){
         var form = layui.form,
-            layer = layui.layer ;
+            layer = layui.layer;
       //监听提交
         form.on('submit(formDemo)', function(data){
-            {#layer.msg(JSON.stringify(data.field));#}
-            var data_info = {data:JSON.stringify(data.field)};
             var $ = layui.jquery;
-            console.log(data_info);
+            // 单击之后提交按钮不可选,防止重复提交
+            var DISABLED = 'layui-btn-disabled';
+            // 增加样式
+            $('.site-demo-active').addClass(DISABLED);
+            // 增加属性
+            $('.site-demo-active').attr('disabled', true);
+            var data_info = {data:JSON.stringify(data.field)};
             $.ajax({
 				type : 'POST',
 				url : '/user/top_up/',
@@ -88,7 +92,13 @@
 						icon : 5
 					});
 					parent.layer.closeAll('iframe'); //关闭弹框
-				}
+				},
+                complete:function () {
+                    // 增加样式
+                    $('.demo-active').removeClass(DISABLED);
+                    // 增加属性
+                    $('.demo-active').attr('disabled', false);
+                }
 			});
 			return false;
             });
